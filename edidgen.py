@@ -43,7 +43,7 @@ def main():
 
     buffer[38:38+16] = 1
 
-    args = (ast.literal_eval(x) for x in sys.argv[2:])
+    args = tuple(ast.literal_eval(x) for x in sys.argv[2:])
     add_detailed(buffer[54:], *args)
 
     buffer[-1] = 256 - (int(np.sum(buffer[:-1])) & 0xff)
@@ -51,5 +51,10 @@ def main():
     buffer.tofile(sys.argv[1])
     subprocess.run(['edid-decode', sys.argv[1]])
 
+
+    print("NTSC timings in usec should be 52.6, 1.5, 4.7, 4.7, total 63.5:")
+
+    print(list(1e6 * x / args[0] for x in args[1:5]))
+    print("Total:", 1e6 * sum(args[1:5]) / args[0])
 if __name__ == '__main__':
     main()
